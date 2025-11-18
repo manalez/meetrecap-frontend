@@ -92,9 +92,13 @@ npm run dev
 ## 🧭 Fonctionnement global
 
 1️⃣ L’utilisateur s’inscrit ou se connecte (via `Register.vue` / `Login.vue`).
+
 2️⃣ Une fois connecté, il accède au `Dashboard.vue`.
+
 3️⃣ Depuis la page `UploadAudio.vue`, il téléverse un fichier audio `.mp3`.
+
 4️⃣ Le backend (FastAPI) traite le fichier (transcription + résumé IA).
+
 5️⃣ Le frontend affiche les résultats à l’écran.
 
 ---
@@ -119,9 +123,4 @@ Projet académique :
 **MeetRecap – Application de transcription et résumé automatique de réunions**
 
 
-💬 Ce README est **propre, complet et professionnel** :
-- ✅ tu peux le coller directement dans `frontend/README.md`
-- ✅ il est déjà au format GitHub Markdown
-- ✅ il valorise bien ton choix technique (Vue + Tailwind)
-- ✅ il est adapté à ta présentation devant ton prof.
 

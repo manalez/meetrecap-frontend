@@ -3,7 +3,7 @@
     <!-- Sidebar -->
     <aside class="w-64 bg-gray-900 text-white flex flex-col">
       <div class="p-6 text-2xl font-bold border-b border-gray-700">
-        🎧 MeetRecap
+        MeetRecap
       </div>
       <nav class="flex-1 p-4 space-y-3">
         <router-link
@@ -11,21 +11,21 @@
           class="block px-4 py-2 rounded-lg hover:bg-gray-700 transition"
           active-class="bg-gray-800"
         >
-          🏠 Tableau de bord
+          Tableau de bord
         </router-link>
         <router-link
           to="/upload"
           class="block px-4 py-2 rounded-lg hover:bg-gray-700 transition"
           active-class="bg-gray-800"
         >
-          ⬆️ Importer un enregistrement
+          Importer un enregistrement
         </router-link>
         <router-link
           to="/account"
           class="block px-4 py-2 rounded-lg hover:bg-gray-700 transition"
           active-class="bg-gray-800"
         >
-          👤 Mon compte
+          Mon compte
         </router-link>
       </nav>
       <div class="p-4 border-t border-gray-700">
@@ -33,7 +33,7 @@
           @click="logout"
           class="w-full bg-red-500 hover:bg-red-600 py-2 rounded-lg text-white font-semibold transition"
         >
-          🚪 Déconnexion
+          Déconnexion
         </button>
       </div>
     </aside>
@@ -47,7 +47,7 @@
           <h2 class="text-xl font-semibold mb-3">Importer depuis Google Drive</h2>
           <p class="text-gray-500 mb-4">Importez un enregistrement audio depuis votre Drive.</p>
           <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
-            📂 Importer
+            Importer
           </button>
         </div>
 
@@ -58,12 +58,12 @@
             to="/upload"
             class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition"
           >
-            ⬆️ Importer localement
+            Importer localement
           </router-link>
         </div>
       </div>
 
-      <h2 class="text-2xl font-bold mt-10 mb-4">📋 Derniers enregistrements</h2>
+      <h2 class="text-2xl font-bold mt-10 mb-4">Derniers enregistrements</h2>
 
       <table class="w-full bg-white rounded-xl shadow overflow-hidden">
         <thead class="bg-gray-200 text-gray-700">
@@ -114,7 +114,7 @@ const recordings = ref([
 ])
 
 function logout() {
-  alert("🔒 Déconnecté")
+  alert("Déconnecté")
   router.push("/login")
 }
 </script>

@@ -2,21 +2,21 @@
   <div class="min-h-screen flex bg-gray-100">
     <!-- Sidebar -->
     <aside class="w-64 bg-gray-900 text-white flex flex-col">
-      <div class="p-6 text-2xl font-bold border-b border-gray-700">⚙️ Compte</div>
+      <div class="p-6 text-2xl font-bold border-b border-gray-700">Compte</div>
       <nav class="flex-1 p-4 space-y-3">
         <router-link
           to="/dashboard"
           class="block px-4 py-2 rounded-lg hover:bg-gray-700 transition"
           active-class="bg-gray-800"
         >
-          🏠 Tableau de bord
+          Tableau de bord
         </router-link>
         <router-link
           to="/account"
           class="block px-4 py-2 rounded-lg hover:bg-gray-700 transition"
           active-class="bg-gray-800"
         >
-          👤 Mon compte
+          Mon compte
         </router-link>
       </nav>
       <div class="p-4 border-t border-gray-700">
@@ -24,7 +24,7 @@
           @click="logout"
           class="w-full bg-red-500 hover:bg-red-600 py-2 rounded-lg text-white font-semibold transition"
         >
-          🚪 Déconnexion
+          Déconnexion
         </button>
       </div>
     </aside>
@@ -65,7 +65,7 @@
           @click.prevent="saveAccount"
           class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition"
         >
-          💾 Enregistrer
+          Enregistrer
         </button>
       </form>
     </main>
@@ -85,11 +85,11 @@ const password = ref("123456")
 const phone = ref("+33 1 234 56789")
 
 function saveAccount() {
-  alert("✅ Compte mis à jour avec succès !")
+  alert("Compte mis à jour avec succès !")
 }
 
 function logout() {
-  alert("🔒 Déconnecté")
+  alert("Déconnecté")
   router.push("/login")
 }
 </script>

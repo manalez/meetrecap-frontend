@@ -89,11 +89,11 @@ const router = useRouter()
 
 function registerUser() {
   if (password.value !== confirmPassword.value) {
-    alert("❌ Les mots de passe ne correspondent pas.")
+    alert("Les mots de passe ne correspondent pas.")
     return
   }
 
-  alert(`✅ Compte créé pour ${firstname.value} ${lastname.value}`)
+  alert(`Compte créé pour ${firstname.value} ${lastname.value}`)
   router.push("/login")
 }
 </script>

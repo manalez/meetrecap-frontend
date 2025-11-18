@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 to-blue-500">
     <div class="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md">
-      <h2 class="text-3xl font-bold text-center text-purple-600 mb-8">🔐 Connexion</h2>
+      <h2 class="text-3xl font-bold text-center text-purple-600 mb-8">Connexion</h2>
 
       <form @submit.prevent="loginUser" class="space-y-4">
         <div>
@@ -62,14 +62,14 @@ const router = useRouter()
 
 function loginUser() {
   if (email.value === "test@mail.com" && password.value === "123456") {
-    alert("✅ Connexion réussie !")
+    alert("Connexion réussie !")
     router.push("/dashboard")
   } else {
-    alert("❌ Identifiants invalides")
+    alert("Identifiants invalides")
   }
 }
 
 function loginWithGoogle() {
-  alert("🔗 Connexion Google simulée (backend à venir)")
+  alert("Connexion Google simulée (backend à venir)")
 }
 </script>

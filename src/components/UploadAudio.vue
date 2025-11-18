@@ -2,7 +2,7 @@
   <div class="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-gray-800">
     <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
       <h1 class="text-2xl font-bold text-center text-purple-600 mb-6">
-        🎧 Importer un enregistrement
+        Importer un enregistrement
       </h1>
 
       <!-- Input file -->
@@ -30,7 +30,7 @@
         :disabled="!selectedFile || isUploading"
         class="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
       >
-        {{ isUploading ? "Envoi en cours..." : "📤 Envoyer le fichier" }}
+        {{ isUploading ? "Envoi en cours..." : "Envoyer le fichier" }}
       </button>
 
       <!-- Résumé -->
@@ -68,13 +68,13 @@ function handleFileUpload(event) {
 
 async function submitFile() {
   if (!selectedFile.value) {
-    statusMessage.value = "❌ Aucun fichier sélectionné."
+    statusMessage.value = "Aucun fichier sélectionné."
     return
   }
 
   isUploading.value = true
   uploadProgress.value = 0
-  statusMessage.value = "📡 Envoi du fichier en cours..."
+  statusMessage.value = "Envoi du fichier en cours..."
 
   const formData = new FormData()
   formData.append("file", selectedFile.value)
@@ -88,7 +88,7 @@ async function submitFile() {
     })
 
     result.value = response.data.result
-    statusMessage.value = "✅ Transcription terminée avec succès 🎉"
+    statusMessage.value = "Transcription terminée avec succès "
   } catch (error) {
     console.error(error)
     statusMessage.value =
