@@ -43,7 +43,7 @@ frontend/
 
 ### 1️⃣ Cloner le dépôt
 ```bash
-git clone https://github.com/mounia000/transcription_meetvocal.git
+git clone https://github.com/manalez/frontbackmeetrecap
 cd frontend
 ````
 
