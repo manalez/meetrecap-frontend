@@ -1,75 +1,63 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 to-blue-500">
-    <div class="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md">
-      <h2 class="text-3xl font-bold text-center text-purple-600 mb-8">Connexion</h2>
+  <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div class="bg-white p-8 rounded-lg shadow-md w-96">
+      <h1 class="text-2xl font-bold mb-6 text-center">Connexion</h1>
 
-      <form @submit.prevent="loginUser" class="space-y-4">
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Email</label>
-          <input
-            v-model="email"
-            type="email"
-            placeholder="exemple@mail.com"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500"
-            required
-          />
-        </div>
-
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Mot de passe</label>
-          <input
-            v-model="password"
-            type="password"
-            placeholder="••••••••"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500"
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          class="w-full bg-purple-600 text-white font-semibold py-2 rounded-lg hover:bg-purple-700 transition"
-        >
+      <form @submit.prevent="login" class="flex flex-col gap-4">
+        <input
+          v-model="email"
+          type="email"
+          placeholder="Email"
+          class="border border-gray-300 rounded-lg p-2"
+          required
+        />
+        <input
+          v-model="password"
+          type="password"
+          placeholder="Mot de passe"
+          class="border border-gray-300 rounded-lg p-2"
+          required
+        />
+        <button type="submit" class="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
           Se connecter
         </button>
       </form>
 
-      <div class="mt-6 text-center">
-        <p class="text-gray-600">Pas encore de compte ?</p>
-        <router-link to="/register" class="text-purple-600 hover:underline font-semibold">Créer un compte</router-link>
-      </div>
+      <p v-if="error" class="text-red-600 mt-4 text-center">{{ error }}</p>
 
-      <div class="mt-8">
-        <button
-          @click="loginWithGoogle"
-          class="w-full flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-lg hover:bg-gray-50 transition"
-        >
-          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5" />
-          Connexion avec Google
-        </button>
-      </div>
+      <p class="text-center mt-4">
+        Pas encore de compte ?
+        <router-link to="/register" class="text-blue-600 hover:underline">
+          Créer un compte
+        </router-link>
+      </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue"
-import { useRouter } from "vue-router"
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { loginUser } from "@/api/api"; 
 
-const email = ref("")
-const password = ref("")
-const router = useRouter()
+const email = ref("");
+const password = ref("");
+const error = ref("");
+const router = useRouter();
 
-function loginUser() {
-  if (email.value === "test@mail.com" && password.value === "123456") {
-    alert("Connexion réussie !")
-    router.push("/dashboard")
-  } else {
-    alert("Identifiants invalides")
+async function login() {
+  error.value = "";
+  try {
+    const response = await loginUser({
+      email: email.value,
+      password: password.value,
+    });
+
+    const token = response.data.access_token;
+    localStorage.setItem("token", token);
+    router.push("/dashboard");
+  } catch (err) {
+    error.value = "Email ou mot de passe incorrect";
   }
-}
-
-function loginWithGoogle() {
-  alert("Connexion Google simulée (backend à venir)")
 }
 </script>

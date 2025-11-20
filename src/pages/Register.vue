@@ -1,99 +1,178 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
-    <div class="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md">
-      <h2 class="text-3xl font-bold text-center text-blue-600 mb-8">📝 Créer un compte</h2>
+  <div class="register-container">
+    <div class="register-card">
+      <h2>Créer un compte </h2>
 
-      <form @submit.prevent="registerUser" class="space-y-4">
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Nom</label>
+      <form @submit.prevent="handleRegister">
+        <div class="form-group">
+          <label>Nom complet</label>
           <input
-            v-model="lastname"
+            v-model="name"
             type="text"
-            placeholder="Votre nom"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+            placeholder="Entrez votre nom"
             required
           />
         </div>
 
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Prénom</label>
-          <input
-            v-model="firstname"
-            type="text"
-            placeholder="Votre prénom"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Email</label>
+        <div class="form-group">
+          <label>Email</label>
           <input
             v-model="email"
             type="email"
-            placeholder="exemple@mail.com"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+            placeholder="Entrez votre email"
             required
           />
         </div>
 
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Mot de passe</label>
+        <div class="form-group">
+          <label>Mot de passe</label>
           <input
             v-model="password"
             type="password"
-            placeholder="••••••••"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+            placeholder="Choisissez un mot de passe"
             required
           />
         </div>
 
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Confirmer le mot de passe</label>
-          <input
-            v-model="confirmPassword"
-            type="password"
-            placeholder="••••••••"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Créer mon compte
+        <button type="submit" :disabled="loading">
+          <span v-if="loading">Création du compte...</span>
+          <span v-else>S'inscrire</span>
         </button>
       </form>
 
-      <div class="mt-6 text-center">
-        <p class="text-gray-600">Déjà inscrit ?</p>
-        <router-link to="/login" class="text-blue-600 hover:underline font-semibold">Se connecter</router-link>
-      </div>
+      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+      <p v-if="successMessage" class="success">{{ successMessage }}</p>
+
+      <router-link to="/login" class="link">
+        Déjà un compte ? Connectez-vous
+      </router-link>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref } from "vue"
-import { useRouter } from "vue-router"
+<script>
+import { registerUser } from "@/api/api";
 
-const lastname = ref("")
-const firstname = ref("")
-const email = ref("")
-const password = ref("")
-const confirmPassword = ref("")
+export default {
+  name: "RegisterView",
+  data() {
+    return {
+      name: "",
+      email: "",
+      password: "",
+      loading: false,
+      errorMessage: "",
+      successMessage: "",
+    };
+  },
+  methods: {
+    async handleRegister() {
+      this.errorMessage = "";
+      this.successMessage = "";
+      this.loading = true;
 
-const router = useRouter()
+      try {
+        const { data } = await registerUser({
+          name: this.name,
+          email: this.email,
+          password: this.password,
+        });
 
-function registerUser() {
-  if (password.value !== confirmPassword.value) {
-    alert("Les mots de passe ne correspondent pas.")
-    return
-  }
+        // Sauvegarde du token (si backend en renvoie un)
+        if (data.access_token) {
+          localStorage.setItem("token", data.access_token);
+        }
 
-  alert(`Compte créé pour ${firstname.value} ${lastname.value}`)
-  router.push("/login")
-}
+        this.successMessage = "Compte créé avec succès ! Redirection...";
+        setTimeout(() => {
+          this.$router.push("/login"); // redirection vers login après inscription
+        }, 1500);
+      } catch (error) {
+        if (error.response && error.response.data) {
+          this.errorMessage =
+            error.response.data.detail || "Erreur lors de la création du compte.";
+        } else {
+          this.errorMessage = "Impossible de contacter le serveur.";
+        }
+      } finally {
+        this.loading = false;
+      }
+    },
+  },
+};
 </script>
+
+<style scoped>
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #f7f9fc;
+}
+
+.register-card {
+  width: 380px;
+  background: white;
+  padding: 2rem 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+h2 {
+  color: #222;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.7rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+}
+
+button {
+  width: 100%;
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #d9534f;
+  margin-top: 1rem;
+}
+
+.success {
+  color: #28a745;
+  margin-top: 1rem;
+}
+
+.link {
+  display: block;
+  margin-top: 1rem;
+  color: #007bff;
+  text-decoration: none;
+}
+</style>

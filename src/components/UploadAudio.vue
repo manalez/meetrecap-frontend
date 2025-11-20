@@ -1,100 +1,103 @@
 <template>
-  <div class="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-gray-800">
-    <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
-      <h1 class="text-2xl font-bold text-center text-purple-600 mb-6">
-        Importer un enregistrement
-      </h1>
+  <div class="max-w-md mx-auto mt-10 bg-white p-6 rounded-lg shadow">
+    <h2 class="text-xl font-semibold mb-4">Uploader un audio 🎧</h2>
 
-      <!-- Input file -->
-      <input
-        type="file"
-        accept="audio/mp3,audio/mpeg"
-        @change="handleFileUpload"
-        class="mb-4 w-full border-2 border-dashed border-gray-300 p-4 rounded-lg cursor-pointer hover:border-purple-500"
-      />
+    <!-- Champ du titre -->
+    <input
+      v-model="title"
+      type="text"
+      placeholder="Titre de la réunion"
+      class="input mb-3"
+    />
 
-      <!-- Progress bar -->
-      <div v-if="uploadProgress > 0" class="w-full bg-gray-200 rounded-full h-4 mb-4">
-        <div
-          class="bg-purple-600 h-4 rounded-full transition-all"
-          :style="{ width: uploadProgress + '%' }"
-        ></div>
-      </div>
+    <!-- Sélecteur de fichier -->
+    <input
+      type="file"
+      accept=".mp3,.wav,.m4a"
+      @change="onFileChange"
+      class="mb-3"
+    />
 
-      <!-- Status -->
-      <p v-if="statusMessage" class="text-center text-sm mb-4">{{ statusMessage }}</p>
+    <!-- Bouton d’envoi -->
+    <button @click="sendAudio" class="btn w-full">Envoyer</button>
 
-      <!-- Bouton upload -->
-      <button
-        @click="submitFile"
-        :disabled="!selectedFile || isUploading"
-        class="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-      >
-        {{ isUploading ? "Envoi en cours..." : "Envoyer le fichier" }}
-      </button>
-
-      <!-- Résumé -->
-      <div v-if="result" class="mt-6 border-t pt-4 text-left text-sm">
-        <h2 class="font-semibold text-purple-700 mb-2">Résumé général :</h2>
-        <p class="text-gray-700 whitespace-pre-line">{{ result.summary }}</p>
-
-        <h3 class="font-semibold text-purple-700 mt-4 mb-2">Par locuteur :</h3>
-        <ul>
-          <li v-for="(text, speaker) in result.speakers" :key="speaker" class="mb-2">
-            <strong>{{ speaker }} :</strong> {{ text }}
-          </li>
-        </ul>
-      </div>
-    </div>
+    <!-- Messages -->
+    <p v-if="message" class="text-green-600 mt-4">{{ message }}</p>
+    <p v-if="error" class="text-red-600 mt-4">{{ error }}</p>
   </div>
 </template>
 
 <script setup>
-import axios from "axios"
-import { ref } from "vue"
+import { ref } from "vue";
+import { uploadAudio } from "../api/api";
 
-const selectedFile = ref(null)
-const uploadProgress = ref(0)
-const statusMessage = ref("")
-const result = ref(null)
-const isUploading = ref(false)
+const file = ref(null);
+const title = ref("");
+const message = ref("");
+const error = ref("");
 
-function handleFileUpload(event) {
-  selectedFile.value = event.target.files[0]
-  statusMessage.value = selectedFile.value
-    ? `Fichier sélectionné : ${selectedFile.value.name}`
-    : ""
+/**
+ * Détection du fichier sélectionné
+ */
+function onFileChange(e) {
+  file.value = e.target.files[0];
 }
 
-async function submitFile() {
-  if (!selectedFile.value) {
-    statusMessage.value = "Aucun fichier sélectionné."
-    return
-  }
-
-  isUploading.value = true
-  uploadProgress.value = 0
-  statusMessage.value = "Envoi du fichier en cours..."
-
-  const formData = new FormData()
-  formData.append("file", selectedFile.value)
-
+/**
+ * Envoi du fichier audio au backend
+ */
+async function sendAudio() {
   try {
-    const response = await axios.post("http://127.0.0.1:8000/upload", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-      onUploadProgress: (progressEvent) => {
-        uploadProgress.value = Math.round((progressEvent.loaded / progressEvent.total) * 100)
-      },
-    })
+    const token = localStorage.getItem("token");
 
-    result.value = response.data.result
-    statusMessage.value = "Transcription terminée avec succès "
-  } catch (error) {
-    console.error(error)
-    statusMessage.value =
-      "⚠️ Une erreur est survenue lors de l'envoi ou du traitement du fichier."
-  } finally {
-    isUploading.value = false
+    if (!file.value) {
+      error.value = "Choisis un fichier avant d’envoyer.";
+      return;
+    }
+
+    // Appel à l’API d’upload
+    const res = await uploadAudio(file.value, title.value, token);
+
+    // Message de succès
+    message.value = "Fichier envoyé avec succès !";
+    console.log("Résultat backend :", res.data);
+
+    // Rafraîchit la liste des fichiers après 2 secondes
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
+  } catch (err) {
+    console.error("Erreur pendant l’envoi du fichier :", err);
+
+    // Gestion d’erreur lisible pour l’utilisateur
+    if (err.response?.status === 401) {
+      error.value = "Session expirée, reconnecte-toi.";
+      localStorage.removeItem("token");
+    } else if (err.response?.data?.detail) {
+      error.value = `Erreur serveur : ${err.response.data.detail}`;
+    } else {
+      error.value = ` Une erreur est survenue : ${err.message}`;
+    }
   }
 }
 </script>
+
+<style scoped>
+.input {
+  border: 1px solid #ccc;
+  padding: 0.75rem;
+  border-radius: 8px;
+  width: 100%;
+}
+.btn {
+  background-color: #2563eb;
+  color: white;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.2s ease-in-out;
+}
+.btn:hover {
+  background-color: #1d4ed8;
+}
+</style>
