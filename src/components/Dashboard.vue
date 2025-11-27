@@ -1,6 +1,14 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Barre supérieure -->
+    <!-- Notification -->
+  <div
+  v-if="notification"
+  class="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg animate-fade-in"
+>
+  {{ notification }}
+  </div>
+
+    <!-- Navbar -->
     <header class="bg-white shadow-sm">
       <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         <h1 class="text-2xl font-bold text-gray-800">🎧 MeetRecap</h1>
@@ -23,22 +31,18 @@
       </div>
     </header>
 
-    <!-- Contenu principal -->
+    <!-- Main content -->
     <main class="max-w-7xl mx-auto px-6 py-10">
       <h2 class="text-3xl font-semibold mb-8 text-gray-800">Tableau de bord</h2>
 
-      <!-- Options d’import -->
+      <!-- Upload options -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-        <!-- Importer depuis Google Drive -->
-        <div
-          class="bg-white border border-gray-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition"
-        >
-          <h3 class="font-semibold text-lg mb-2 text-gray-800">
-            Importer depuis Google Drive
-          </h3>
-          <p class="text-gray-600 mb-4 text-sm">
-            Importez un enregistrement audio depuis votre Drive.
-          </p>
+
+        <!-- Import Google Drive -->
+        <div class="bg-white border border-gray-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition">
+          <h3 class="font-semibold text-lg mb-2 text-gray-800">Importer depuis Google Drive</h3>
+          <p class="text-gray-600 mb-4 text-sm">Importez un enregistrement audio depuis votre Drive.</p>
+
           <button
             @click="importFromDrive"
             class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold"
@@ -47,28 +51,20 @@
           </button>
         </div>
 
-        <!-- Importer localement -->
-        <div
-          class="bg-white border border-gray-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition"
-        >
-          <h3 class="font-semibold text-lg mb-2 text-gray-800">
-            Importer un fichier local
-          </h3>
-          <p class="text-gray-600 mb-4 text-sm">
-            Choisissez un fichier audio sur votre ordinateur.
-          </p>
+        <!-- Import local -->
+        <div class="bg-white border border-gray-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition">
+          <h3 class="font-semibold text-lg mb-2 text-gray-800">Importer un fichier local</h3>
+          <p class="text-gray-600 mb-4 text-sm">Choisissez un fichier audio sur votre ordinateur.</p>
+
           <button
             @click="toggleUpload"
             class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-semibold"
           >
-            {{ showUpload ? "Fermer le formulaire" : "Importer localement" }}
+            {{ showUpload ? "Fermer" : "Importer localement" }}
           </button>
 
-          <!-- Formulaire d’upload -->
-          <div
-            v-if="showUpload"
-            class="mt-6 border-t pt-6 border-gray-200 animate-fade-in"
-          >
+          <!-- Upload form -->
+          <div v-if="showUpload" class="mt-6 border-t pt-6 border-gray-200 animate-fade-in">
             <h4 class="font-semibold text-gray-800 mb-3">Uploader un audio 🎧</h4>
 
             <input
@@ -78,12 +74,7 @@
               class="border border-gray-300 rounded-lg w-full px-3 py-2 mb-3"
             />
 
-            <input
-              type="file"
-              accept=".mp3,.wav,.m4a"
-              @change="onFileChange"
-              class="mb-3"
-            />
+            <input type="file" accept=".mp3,.wav,.m4a" @change="onFileChange" class="mb-3" />
 
             <button
               @click="sendAudio"
@@ -91,10 +82,10 @@
               class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-semibold disabled:opacity-60"
             >
               <span v-if="!isProcessing">Envoyer</span>
-              <span v-else>⏳ Envoi et traitement en cours...</span>
+              <span v-else>⏳ Traitement en cours...</span>
             </button>
 
-            <!-- Barre de progression -->
+            <!-- Progress bar -->
             <div v-if="uploadProgress > 0" class="mt-4">
               <div class="w-full bg-gray-200 rounded-full h-3">
                 <div
@@ -107,71 +98,34 @@
               </p>
             </div>
 
-            <!-- Message de traitement -->
-            <div
-              v-if="isProcessing"
-              class="mt-4 flex items-center justify-center space-x-2 text-blue-600"
-            >
-              <svg
-                class="animate-spin h-5 w-5 text-blue-600"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8H4z"
-                ></path>
-              </svg>
-              <span>Traitement IA en cours...</span>
-            </div>
-
-            <!-- Messages -->
             <p v-if="message" class="text-green-600 mt-4">{{ message }}</p>
             <p v-if="error" class="text-red-600 mt-4">{{ error }}</p>
           </div>
         </div>
       </div>
 
-      <!-- Liste des fichiers -->
+      <!-- File list -->
       <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
-        <h2 class="text-2xl font-semibold mb-6 text-gray-800">
-          Derniers enregistrements
-        </h2>
+        <h2 class="text-2xl font-semibold mb-6 text-gray-800">Derniers enregistrements</h2>
 
         <div v-if="loading" class="text-gray-500 text-center py-6">
           Chargement des fichiers...
         </div>
 
-        <div
-          v-else-if="fichiers.length === 0"
-          class="text-gray-500 text-center py-6"
-        >
+        <div v-else-if="fichiers.length === 0" class="text-gray-500 text-center py-6">
           Aucun fichier trouvé.
         </div>
 
-        <table
-          v-else
-          class="min-w-full border-collapse rounded-xl overflow-hidden"
-        >
+        <table v-else class="min-w-full border-collapse rounded-xl overflow-hidden">
           <thead class="bg-gray-100">
             <tr>
               <th class="text-left p-3 font-medium text-gray-700">Nom</th>
               <th class="text-left p-3 font-medium text-gray-700">Date</th>
-              <th class="text-left p-3 font-medium text-gray-700">Source</th>
               <th class="text-left p-3 font-medium text-gray-700">Statut</th>
               <th class="text-left p-3 font-medium text-gray-700">Actions</th>
             </tr>
           </thead>
+
           <tbody>
             <tr
               v-for="f in fichiers"
@@ -179,48 +133,47 @@
               class="border-b hover:bg-gray-50 transition"
             >
               <td class="p-3 font-medium text-gray-800">{{ f.title }}</td>
+
               <td class="p-3 text-gray-600">
                 {{ formatDate(f.date_upload) }}
               </td>
-              <td class="p-3 text-gray-600">
-                <span
-                  class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800"
-                >
-                  Upload
-                </span>
-              </td>
+
+              <!-- STATUS -->
               <td class="p-3">
                 <span
                   v-if="f.status === 'completed'"
                   class="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full"
-                  >PDF prêt</span
                 >
-                <span
-                  v-else-if="f.status === 'processing'"
-                  class="bg-yellow-100 text-yellow-800 text-sm px-3 py-1 rounded-full"
-                  >En cours</span
-                >
+                  PDF prêt
+                </span>
                 <span
                   v-else
-                  class="bg-red-100 text-red-800 text-sm px-3 py-1 rounded-full"
-                  >Échec</span
+                  class="bg-yellow-100 text-yellow-800 text-sm px-3 py-1 rounded-full"
                 >
+                  En cours
+                </span>
               </td>
+
+              <!-- ACTIONS -->
               <td class="p-3 space-x-3">
-                <template v-if="f.status === 'completed'">
-                  <a
-                    :href="`http://127.0.0.1:8000/outputs/audio_${f.id_audio}/transcription_finale.pdf`"
-                    target="_blank"
-                    class="text-blue-600 hover:underline font-medium"
-                    >Consulter</a
-                  >
-                  <a
-                    :href="`http://127.0.0.1:8000/outputs/audio_${f.id_audio}/transcription_finale.pdf`"
-                    download
-                    class="text-purple-600 hover:underline font-medium"
-                    >Télécharger</a
-                  >
-                </template>
+                <a
+                  v-if="f.status === 'completed'"
+                  href="http://127.0.0.1:8000/exports/compte_rendu_reunion.pdf"
+                  target="_blank"
+                  class="text-blue-600 hover:underline font-medium"
+                >
+                  Consulter
+                </a>
+
+                <a
+                  v-if="f.status === 'completed'"
+                  href="http://127.0.0.1:8000/exports/compte_rendu_reunion.pdf"
+                  download
+                  class="text-purple-600 hover:underline font-medium"
+                >
+                  Télécharger
+                </a>
+
                 <button
                   @click="deleteFile(f.id_audio)"
                   class="text-red-500 hover:text-red-700 font-medium"
@@ -228,6 +181,7 @@
                   Supprimer
                 </button>
               </td>
+
             </tr>
           </tbody>
         </table>
@@ -241,6 +195,7 @@ import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 
+const notification = ref("");
 const fichiers = ref([]);
 const loading = ref(true);
 const showUpload = ref(false);
@@ -252,6 +207,8 @@ const isProcessing = ref(false);
 const uploadProgress = ref(0);
 const router = useRouter();
 
+const user_id = localStorage.getItem("user_id");
+
 const importFromDrive = () => {
   alert("L’importation depuis Google Drive sera bientôt disponible !");
 };
@@ -261,7 +218,7 @@ const toggleUpload = () => {
 };
 
 const logout = () => {
-  localStorage.removeItem("token");
+  localStorage.removeItem("user_id");
   router.push("/login");
 };
 
@@ -269,37 +226,29 @@ function onFileChange(e) {
   file.value = e.target.files[0];
 }
 
-// 🔹 Formater la date
 function formatDate(dateString) {
   const date = new Date(dateString);
-  return date.toLocaleString("fr-FR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return date.toLocaleString("fr-FR");
 }
 
-// 🔹 Supprimer un fichier
+function showNotification(text) {
+  notification.value = text;
+  setTimeout(() => (notification.value = ""), 4000);
+}
+
+
 async function deleteFile(id_audio) {
   if (!confirm("Voulez-vous vraiment supprimer ce fichier ?")) return;
-
   try {
-    const token = localStorage.getItem("token");
-    await axios.delete(`http://127.0.0.1:8000/fichiers/${id_audio}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    await axios.delete(`http://127.0.0.1:8000/fichiers/${id_audio}`);
     fichiers.value = fichiers.value.filter((f) => f.id_audio !== id_audio);
   } catch (err) {
-    console.error("Erreur suppression :", err);
-    alert("Erreur lors de la suppression du fichier.");
+    alert("Erreur lors de la suppression.");
   }
 }
 
 async function sendAudio() {
   try {
-    const token = localStorage.getItem("token");
     if (!file.value) {
       error.value = "Choisis un fichier avant d’envoyer.";
       return;
@@ -308,42 +257,44 @@ async function sendAudio() {
     const formData = new FormData();
     formData.append("file", file.value);
     formData.append("title", title.value);
+    formData.append("id_user", user_id);   // IMPORTANT
 
-    message.value = "";
     error.value = "";
+    message.value = "";
     uploadProgress.value = 0;
     isProcessing.value = true;
 
     await axios.post("http://127.0.0.1:8000/upload", formData, {
-      headers: { Authorization: `Bearer ${token}` },
       onUploadProgress: (e) => {
         uploadProgress.value = (e.loaded / e.total) * 100;
       },
     });
 
-    message.value = "Fichier envoyé ! Traitement IA en cours...";
-    setTimeout(async () => {
-      await fetchFiles();
-      message.value = "Traitement terminé ! Ton fichier est prêt.";
-      isProcessing.value = false;
-      uploadProgress.value = 0;
-    }, 8000);
+    message.value = "Traitement IA en cours…";
+
+const interval = setInterval(async () => {
+  await fetchFiles();
+
+  const finished = fichiers.value.some(f => f.status === "completed");
+
+  if (finished) {
+    clearInterval(interval);
+    message.value = "";
+    showNotification("✨ Le PDF est prêt !");
+  }
+}, 2000);
+
   } catch (err) {
-    error.value = `❌ ${err.response?.data?.detail || err.message}`;
+    error.value = "Erreur : " + (err.response?.data?.detail || err.message);
+  } finally {
     isProcessing.value = false;
   }
 }
 
-// 🔹 Récupérer les fichiers
 async function fetchFiles() {
   try {
-    const token = localStorage.getItem("token");
-    const res = await axios.get("http://127.0.0.1:8000/fichiers", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await axios.get(`http://127.0.0.1:8000/fichiers?id_user=${user_id}`);
     fichiers.value = res.data;
-  } catch (err) {
-    console.error("Erreur lors du chargement :", err);
   } finally {
     loading.value = false;
   }
@@ -356,7 +307,6 @@ onMounted(fetchFiles);
 .animate-fade-in {
   animation: fadeIn 0.3s ease-in-out;
 }
-
 @keyframes fadeIn {
   from {
     opacity: 0;

@@ -2,59 +2,56 @@
 import axios from "axios";
 import { API_URL } from "./config";
 
-// Création d'une instance Axios
 const api = axios.create({
   baseURL: API_URL,
 });
 
 // ==================== 🔐 AUTH ====================
 
-// ✅ Inscription (REGISTER)
+// REGISTER
 export async function registerUser(data) {
-  return api.post("/register", {
-    name: data.name,        // doit correspondre au backend
-    email: data.email,
-    password: data.password,
-  });
+  const formData = new FormData();
+  formData.append("name", data.name);
+  formData.append("email", data.email);
+  formData.append("password", data.password);
+
+  return api.post("/register", formData);
 }
 
-// ✅ Connexion (LOGIN)
-export async function loginUser(credentials) {
-  return api.post("/login", {
-    email: credentials.email,
-    password: credentials.password,
-  });
+// LOGIN
+export async function loginUser(data) {
+  const formData = new FormData();
+  formData.append("email", data.email);
+  formData.append("password", data.password);
+
+  return api.post("/login", formData);
 }
 
 // ==================== 🎧 UPLOAD AUDIO ====================
-
-export async function uploadAudio(file, title, token) {
+export async function uploadAudio(file) {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("title", title);
 
   return api.post("/upload", formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
+    headers: { "Content-Type": "multipart/form-data" },
   });
 }
 
 // ==================== 📂 FICHIERS ====================
 
-// ✅ Liste des fichiers
-export async function getUserFiles(token) {
-  return api.get("/fichiers", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+// Liste fichiers
+export async function fetchFiles() {
+  return api.get("/fichiers");
 }
 
-// ✅ Détails d’un compte-rendu
-export async function getCompteRendu(audioId, token) {
-  return api.get(`/fichiers/${audioId}/compte-rendu`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+// Détail d’un fichier
+export async function fetchFileDetail(id) {
+  return api.get(`/fichiers/${id}/detail`);
+}
+
+// Télécharger audio original
+export async function downloadAudio(id) {
+  window.open(`${API_URL}/fichiers/${id}/download`, "_blank");
 }
 
 export default api;
