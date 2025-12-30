@@ -6,6 +6,7 @@ import Dashboard from "../components/Dashboard.vue";
 import UploadAudio from "../components/UploadAudio.vue";
 import Account from "../components/Account.vue";
 import FichiersList from "../components/FichiersList.vue";
+import FichierDetail from "../pages/FichierDetail.vue";
 
 const routes = [
   { path: "/", redirect: "/login" },
@@ -17,6 +18,7 @@ const routes = [
   { path: "/upload", component: UploadAudio },
   { path: "/account", component: Account },
   { path: "/fichiers", component: FichiersList },
+  { path: "/fichier/:id", component: FichierDetail },
 ];
 
 export default createRouter({

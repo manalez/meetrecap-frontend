@@ -156,29 +156,27 @@
 
               <!-- ACTIONS -->
               <td class="p-3 space-x-3">
-                <a
+                <router-link
                   v-if="f.status === 'completed'"
-                  href="http://127.0.0.1:8000/exports/compte_rendu_reunion.pdf"
-                  target="_blank"
-                  class="text-blue-600 hover:underline font-medium"
+                  :to="`/fichier/${f.id_audio}`"
+                  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium inline-block"
                 >
-                  Consulter
-                </a>
+                  📄 Consulter
+                </router-link>
 
                 <a
                   v-if="f.status === 'completed'"
-                  href="http://127.0.0.1:8000/exports/compte_rendu_reunion.pdf"
-                  download
-                  class="text-purple-600 hover:underline font-medium"
+                  href="http://localhost:8000/download/pdf"
+                  class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium inline-block"
                 >
-                  Télécharger
+                  📥 PDF
                 </a>
 
                 <button
                   @click="deleteFile(f.id_audio)"
-                  class="text-red-500 hover:text-red-700 font-medium"
+                  class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium"
                 >
-                  Supprimer
+                  🗑️ Supprimer
                 </button>
               </td>
 

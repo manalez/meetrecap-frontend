@@ -24,20 +24,26 @@
         </p>
       </div>
 
-      <div v-if="f.status === 'completed'" class="space-x-3">
-        <a
-          :href="`http://127.0.0.1:8000/outputs/audio_${f.id_audio}/transcription_finale.pdf`"
-          target="_blank"
-          class="text-blue-600 font-semibold hover:underline"
+      <div v-if="f.status === 'completed'" class="flex gap-3">
+        <router-link
+          :to="`/fichier/${f.id_audio}`"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold"
         >
-          Voir
+          📄 Consulter
+        </router-link>
+        <a
+          :href="`http://localhost:8000/exports/compte_rendu_reunion.pdf`"
+          target="_blank"
+          class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold"
+        >
+          📥 PDF
         </a>
         <a
-          :href="`http://127.0.0.1:8000/outputs/audio_${f.id_audio}/transcription_finale.pdf`"
+          :href="`http://localhost:8000/exports/compte_rendu_reunion.docx`"
           download
-          class="text-green-600 font-semibold hover:underline"
+          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold"
         >
-          Télécharger
+          📥 Word
         </a>
       </div>
     </div>
@@ -47,16 +53,15 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import { API_URL } from "../api/config";
 
 const fichiers = ref([]);
 const loading = ref(true);
 
 onMounted(async () => {
   try {
-    const token = localStorage.getItem("token");
-    const res = await axios.get("http://127.0.0.1:8000/fichiers", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const userId = localStorage.getItem("user_id");
+    const res = await axios.get(`${API_URL}/fichiers?id_user=${userId}`);
     fichiers.value = res.data;
   } catch (err) {
     console.error("Erreur lors du chargement :", err);
@@ -65,9 +70,3 @@ onMounted(async () => {
   }
 });
 </script>
-
-<style scoped>
-a {
-  text-decoration: none;
-}
-</style>
