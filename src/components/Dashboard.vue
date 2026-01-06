@@ -166,7 +166,7 @@
 
                 <a
                   v-if="f.status === 'completed'"
-                  href="http://localhost:8000/download/pdf"
+                  :href="`http://localhost:8000/download/pdf/${f.id_audio}`"
                   class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium inline-block"
                 >
                   📥 PDF

@@ -257,11 +257,26 @@
   }
 }
 
-.highlight-search {
-  background-color: yellow;
+/* Style pour le surlignage de recherche - :deep() permet d'atteindre le contenu v-html */
+:deep(.highlight-search) {
+  background-color: #fef08a !important;
+  color: #000 !important;
   font-weight: bold;
-  padding: 2px 4px;
-  border-radius: 3px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  box-shadow: 0 0 0 2px #facc15;
+  animation: highlightPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes highlightPulse {
+  0%, 100% {
+    background-color: #fef08a;
+    box-shadow: 0 0 0 2px #facc15;
+  }
+  50% {
+    background-color: #fde047;
+    box-shadow: 0 0 8px 4px #facc15;
+  }
 }
 
 /* Styles pour les selects en mode sombre */
